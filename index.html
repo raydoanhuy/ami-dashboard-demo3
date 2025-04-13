@@ -4,24 +4,80 @@
   <meta charset="UTF-8">
   <title>AMI AI Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .tab {
+      display: none;
+    }
+    .tab.active {
+      display: block;
+    }
+    .chatbox {
+      margin-top: 30px;
+      padding: 15px;
+      background: #e9f1fb;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h1>📊 AI Dashboard - AMI</h1>
-  <table id="dashboard">
-    <thead>
-      <tr>
-        <th>Dự Án</th>
-        <th>COD</th>
-        <th>Nghiệm thu</th>
-        <th>Giá FIT</th>
-        <th>Rủi ro</th>
-        <th>Khuyến nghị</th>
-      </tr>
-    </thead>
-    <tbody id="data-body"></tbody>
-  </table>
+  <h1>📊 AMI AI Dashboard</h1>
 
-  <script src="data.js"></script>
-  <script src="script.js"></script>
+  <nav>
+    <button onclick="showTab('legal')">AI Pháp Lý</button>
+    <button onclick="showTab('investment')">AI Đầu Tư</button>
+    <button onclick="showTab('risk')">AI Cảnh Báo</button>
+  </nav>
+
+  <div id="tab-legal" class="tab active">
+    <h2>AI Pháp Lý</h2>
+    <p>Phân tích khả năng dự án bị chuyển từ FIT1 sang FIT2...</p>
+    <!-- bảng COD / nghiệm thu sẽ được thêm vào đây -->
+  </div>
+
+  <div id="tab-investment" class="tab">
+    <h2>AI Quản Lý Đầu Tư</h2>
+    <p>Theo dõi dòng tiền giữa các pháp nhân...</p>
+    <!-- sơ đồ dòng tiền hoặc bảng thông tin sẽ thêm tại đây -->
+  </div>
+
+  <div id="tab-risk" class="tab">
+    <h2>AI Cảnh Báo Rủi Ro</h2>
+    <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
+    <!-- bảng cảnh báo sẽ được thêm tại đây -->
+  </div>
+
+  <div class="chatbox">
+    <h3>🤖 Chat với AMI GPT (nội bộ)</h3>
+    <input type="text" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; padding: 10px; margin-top: 10px;">
+  </div>
+
+  <script>
+    function showTab(id) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+    }
+  </script>
 </body>
 </html>
