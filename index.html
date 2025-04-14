@@ -103,9 +103,11 @@
   </div>
 
   <div class="chatbox">
-    <h3>🤖 Chat với AMI GPT (nội bộ)</h3>
-    <input type="text" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; padding: 10px; margin-top: 10px;">
-  </div>
+  <h3>🤖 Chat với AMI GPT (nội bộ)</h3>
+  <input id="chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; padding: 10px; margin-top: 10px;">
+  <button onclick="askGPT()" style="margin-top: 10px;">Gửi câu hỏi</button>
+  <div id="chat-response" style="margin-top: 15px; background: white; padding: 10px; border-radius: 5px;"></div>
+</div>
 
   <script>
     function showTab(id) {
@@ -157,6 +159,41 @@
         tbody.appendChild(row);
       });
     }
+    async function askGPT() {
+  const input = document.getElementById("chat-input").value;
+  const responseDiv = document.getElementById("chat-response");
+
+  if (!input.trim()) {
+    responseDiv.innerText = "⚠️ Vui lòng nhập câu hỏi!";
+    return;
+  }
+
+  responseDiv.innerText = "⏳ Đang xử lý...";
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer YOUR_API_KEY_HERE",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [{ role: "user", content: input }]
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      responseDiv.innerText = "❌ Lỗi: " + data.error.message;
+    } else {
+      responseDiv.innerText = data.choices[0].message.content;
+    }
+  } catch (err) {
+    responseDiv.innerText = "❌ Lỗi kết nối: " + err.message;
+  }
+}
   </script>
 </body>
 </html>
