@@ -73,9 +73,10 @@
     <button onclick="showTab('risk')">AI Cảnh Báo</button>
   </nav>
 
-  <div id="tab-legal" class="tab active">
+  <div id="tab-legal" class="tab">
     <h2>AI Pháp Lý</h2>
     <p>Phân tích khả năng dự án bị chuyển từ FIT1 sang FIT2 dựa vào COD và nghiệm thu.</p>
+    <button onclick="loadLegalData()">Hiển thị kết quả phân tích</button>
     <table>
       <thead>
         <tr>
@@ -141,6 +142,7 @@
 
     function loadLegalData() {
       const tbody = document.getElementById("legal-data");
+      tbody.innerHTML = "";
       projectsLegal.forEach(p => {
         const row = document.createElement("tr");
         row.className = `risk-${p.risk}`;
@@ -155,8 +157,6 @@
         tbody.appendChild(row);
       });
     }
-
-    document.addEventListener("DOMContentLoaded", loadLegalData);
   </script>
 </body>
 </html>
