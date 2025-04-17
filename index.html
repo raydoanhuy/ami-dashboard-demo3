@@ -12,11 +12,11 @@
       padding: 20px;
     }
     nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
     button:hover {
       background-color: #0056b3;
     }
@@ -47,7 +47,7 @@
     }
     .chat-history {
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 10px;
     }
     .chat-entry {
@@ -72,3 +72,198 @@
       padding: 10px;
       border: 1px solid #ccc;
       text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .risk-cao {
+      background-color: #ffd6d6;
+    }
+    .risk-trungbinh {
+      background-color: #fff5cc;
+    }
+    .risk-thap {
+      background-color: #ddffdd;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 AMI AI Dashboard</h1>
+
+  <nav>
+    <button onclick="showTab('legal')">AI Pháp Lý</button>
+    <button onclick="showTab('investment')">AI Đầu Tư</button>
+    <button onclick="showTab('risk')">AI Cảnh Báo</button>
+  </nav>
+
+  <div id="tab-legal" class="tab">
+    <h2>AI Pháp Lý</h2>
+    <p>Trò chuyện với chatbot pháp lý AMI</p>
+    <div class="chatbox">
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="flex: 1" onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
+    <button onclick="askLegalBot()" style="background: #007bff; border: none; padding: 10px 15px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer;">
+      ↑
+    </button>
+  </div>
+  <div id="legal-chat-response" class="chat-history"></div>
+    </div>
+  </div>
+
+  <div id="tab-investment" class="tab">
+  <h2>AI Quản Lý Đầu Tư</h2>
+  <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Dự Án</th>
+        <th>Ngày COD</th>
+        <th>Nghiệm Thu</th>
+        <th>Giá FIT kỳ vọng</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Khánh Hòa - AMI</td>
+        <td>04/05/2019 / 26/06/2019</td>
+        <td>11/09/2019</td>
+        <td>FIT 1 (9,35 cent/kWh)</td>
+      </tr>
+      <tr>
+        <td>BT1 - AMI</td>
+        <td>26/10/2021</td>
+        <td>-</td>
+        <td>FIT 1</td>
+      </tr>
+      <tr>
+        <td>BMT - AMI</td>
+        <td>Sau COD</td>
+        <td>-</td>
+        <td>FIT 1</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <div id="tab-risk" class="tab">
+    <h2>AI Cảnh Báo Rủi Ro</h2>
+    <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
+    <button onclick="loadLegalData()">Hiển thị kết quả phân tích pháp lý</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>FIT</th>
+          <th>Nguy Cơ</th>
+          <th>Khuyến Nghị</th>
+        </tr>
+      </thead>
+      <tbody id="legal-data"></tbody>
+    </table>
+  </div>
+
+<script>
+const faqData = {
+  "thuế": {
+    "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
+    "doanh nghiệp có phải đóng thuế gtgt không": "Doanh nghiệp có doanh thu đều phải kê khai và nộp thuế GTGT nếu không thuộc diện miễn."
+  },
+  "lao động": {
+    "hợp đồng lao động có bắt buộc công chứng không": "Không. Hợp đồng lao động không bắt buộc công chứng, trừ một số trường hợp đặc biệt.",
+    "người lao động nghỉ việc có cần báo trước không": "Có. Thông thường cần báo trước 30 ngày (hợp đồng xác định thời hạn)."
+  },
+  "hợp đồng": {
+    "hợp đồng miệng có giá trị pháp lý không": "Có. Nhưng rất khó chứng minh khi xảy ra tranh chấp nếu không có bằng chứng đi kèm.",
+    "phạt vi phạm trong hợp đồng là bao nhiêu": "Phạt vi phạm không vượt quá 8% giá trị phần nghĩa vụ vi phạm (theo Luật Thương mại)."
+  },
+  "sở hữu trí tuệ": {
+    "đăng ký bản quyền logo ở đâu": "Tại Cục Bản quyền tác giả - Bộ Văn hóa, Thể thao và Du lịch.",
+    "logo chưa đăng ký có được bảo vệ không": "Chưa. Logo cần đăng ký để có hiệu lực pháp lý và được pháp luật bảo hộ."
+  }
+};
+
+function askLegalBot() {
+  const inputEl = document.getElementById("legal-chat-input");
+  const input = inputEl.value.trim().toLowerCase();
+  const responseDiv = document.getElementById("legal-chat-response");
+  if (!input) return;
+
+  let found = false;
+  let answer = "";
+  for (const [topic, questions] of Object.entries(faqData)) {
+    for (const [question, ans] of Object.entries(questions)) {
+      if (input.includes(question)) {
+        answer = "🧠 " + ans;
+        found = true;
+        break;
+      }
+    }
+    if (found) break;
+  }
+
+  if (!found) {
+    answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
+  }
+
+  const entry = document.createElement("div");
+  entry.className = "chat-entry";
+  entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
+  responseDiv.appendChild(entry);
+  inputEl.value = "";
+  responseDiv.scrollTop = responseDiv.scrollHeight;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function loadLegalData() {
+  const projectsLegal = [
+    {
+      name: "Khánh Hòa - AMI",
+      cod: "26/06/2019",
+      acceptance: "11/09/2019",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Cung cấp biên bản nộp hồ sơ từ tháng 7/2019 để chứng minh thiện chí tuân thủ trước Thông tư 10/2023."
+    },
+    {
+      name: "BT1 - AMI",
+      cod: "16/10/2021",
+      acceptance: "26/10/2021",
+      fit: "FIT 1",
+      risk: "trungbinh",
+      recommendation: "Cân nhắc dời ngày COD về sau nghiệm thu để hợp thức FIT 1 và giảm nguy cơ hồi tố."
+    },
+    {
+      name: "BMT - AMI",
+      cod: "Đang xác minh",
+      acceptance: "Sau COD",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Bổ sung giấy phép hoạt động thủy lộ và lập luận về bản chất pháp lý quyền sử dụng đất."
+    }
+  ];
+
+  const tbody = document.getElementById("legal-data");
+  tbody.innerHTML = "";
+  projectsLegal.forEach(p => {
+    const row = document.createElement("tr");
+    row.className = `risk-${p.risk}`;
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.cod}</td>
+      <td>${p.acceptance}</td>
+      <td>${p.fit}</td>
+      <td>${p.risk.toUpperCase()}</td>
+      <td>${p.recommendation}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+</script>
+</body>
+</html>
