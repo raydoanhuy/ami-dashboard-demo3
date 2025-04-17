@@ -52,6 +52,23 @@
       outline: none;
       border-color: #007bff;
     }
+    .chat-history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-entry {
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .chat-question {
+      font-weight: bold;
+      color: #007bff;
+    }
+    .chat-answer {
+      margin-top: 5px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -91,7 +108,7 @@
     <p>Trò chuyện với chatbot pháp lý AMI</p>
     <div class="chatbox">
       <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
-      <div id="legal-chat-response" style="background: white; padding: 10px; border-radius: 5px;"></div>
+      <div id="legal-chat-response" class="chat-history"></div>
     </div>
   </div>
 
@@ -120,8 +137,6 @@
   </div>
 
 <script>
-// JavaScript xử lý chatbot pháp lý
-
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -142,19 +157,17 @@ const faqData = {
 };
 
 function askLegalBot() {
-  const input = document.getElementById("legal-chat-input").value.trim().toLowerCase();
+  const inputEl = document.getElementById("legal-chat-input");
+  const input = inputEl.value.trim().toLowerCase();
   const responseDiv = document.getElementById("legal-chat-response");
-
-  if (!input) {
-    responseDiv.innerText = "⚠️ Vui lòng nhập câu hỏi.";
-    return;
-  }
+  if (!input) return;
 
   let found = false;
+  let answer = "";
   for (const [topic, questions] of Object.entries(faqData)) {
-    for (const [question, answer] of Object.entries(questions)) {
+    for (const [question, ans] of Object.entries(questions)) {
       if (input.includes(question)) {
-        responseDiv.innerText = "🧠 " + answer;
+        answer = "🧠 " + ans;
         found = true;
         break;
       }
@@ -163,8 +176,15 @@ function askLegalBot() {
   }
 
   if (!found) {
-    responseDiv.innerHTML = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
+    answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
   }
+
+  const entry = document.createElement("div");
+  entry.className = "chat-entry";
+  entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
+  responseDiv.appendChild(entry);
+  inputEl.value = "";
+  responseDiv.scrollTop = responseDiv.scrollHeight;
 }
 
 function showTab(id) {
