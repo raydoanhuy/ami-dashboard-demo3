@@ -75,7 +75,12 @@
 
   <div id="tab-legal" class="tab">
     <h2>AI Pháp Lý</h2>
-    <p>Phân tích khả năng dự án bị chuyển từ FIT1 sang FIT2 dựa vào COD và nghiệm thu.</p>
+    <p>Trò chuyện với chatbot pháp lý AMI</p>
+    <div class="chatbox">
+      <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; padding: 10px;">
+      <button onclick="askLegalBot()" style="margin-top: 10px;">Gửi câu hỏi</button>
+      <div id="legal-chat-response" style="margin-top: 15px; background: white; padding: 10px; border-radius: 5px;"></div>
+    </div>
   </div>
 
   <div id="tab-investment" class="tab">
@@ -100,13 +105,6 @@
       </thead>
       <tbody id="legal-data"></tbody>
     </table>
-  </div>
-
-  <div class="chatbox">
-    <h3>🤖 Chat với AMI GPT (nội bộ)</h3>
-    <input id="chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; padding: 10px; margin-top: 10px;">
-    <button onclick="askGPT()" style="margin-top: 10px;">Gửi câu hỏi</button>
-    <div id="chat-response" style="margin-top: 15px; background: white; padding: 10px; border-radius: 5px;"></div>
   </div>
 
   <script>
@@ -142,6 +140,25 @@
       }
     ];
 
+    const faqData = {
+      "thuế": {
+        "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
+        "doanh nghiệp có phải đóng thuế gtgt không": "Doanh nghiệp có doanh thu đều phải kê khai và nộp thuế GTGT nếu không thuộc diện miễn."
+      },
+      "lao động": {
+        "hợp đồng lao động có bắt buộc công chứng không": "Không. Hợp đồng lao động không bắt buộc công chứng, trừ một số trường hợp đặc biệt.",
+        "người lao động nghỉ việc có cần báo trước không": "Có. Thông thường cần báo trước 30 ngày (hợp đồng xác định thời hạn)."
+      },
+      "hợp đồng": {
+        "hợp đồng miệng có giá trị pháp lý không": "Có. Nhưng rất khó chứng minh khi xảy ra tranh chấp nếu không có bằng chứng đi kèm.",
+        "phạt vi phạm trong hợp đồng là bao nhiêu": "Phạt vi phạm không vượt quá 8% giá trị phần nghĩa vụ vi phạm (theo Luật Thương mại)."
+      },
+      "sở hữu trí tuệ": {
+        "đăng ký bản quyền logo ở đâu": "Tại Cục Bản quyền tác giả - Bộ Văn hóa, Thể thao và Du lịch.",
+        "logo chưa đăng ký có được bảo vệ không": "Chưa. Logo cần đăng ký để có hiệu lực pháp lý và được pháp luật bảo hộ."
+      }
+    };
+
     function loadLegalData() {
       const tbody = document.getElementById("legal-data");
       tbody.innerHTML = "";
@@ -160,39 +177,29 @@
       });
     }
 
-    async function askGPT() {
-      const input = document.getElementById("chat-input").value;
-      const responseDiv = document.getElementById("chat-response");
+    function askLegalBot() {
+      const input = document.getElementById("legal-chat-input").value.trim().toLowerCase();
+      const responseDiv = document.getElementById("legal-chat-response");
 
-      if (!input.trim()) {
-        responseDiv.innerText = "⚠️ Vui lòng nhập câu hỏi!";
+      if (!input) {
+        responseDiv.innerText = "⚠️ Vui lòng nhập câu hỏi.";
         return;
       }
 
-      responseDiv.innerText = "⏳ Đang xử lý...";
-
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer YOUR_API_KEY_HERE",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: "gpt-4",
-            messages: [{ role: "user", content: input }]
-          })
-        });
-
-        const data = await res.json();
-
-        if (data.error) {
-          responseDiv.innerText = "❌ Lỗi: " + data.error.message;
-        } else {
-          responseDiv.innerText = data.choices[0].message.content;
+      let found = false;
+      for (const [topic, questions] of Object.entries(faqData)) {
+        for (const [question, answer] of Object.entries(questions)) {
+          if (input.includes(question)) {
+            responseDiv.innerText = "🧠 " + answer;
+            found = true;
+            break;
+          }
         }
-      } catch (err) {
-        responseDiv.innerText = "❌ Lỗi kết nối: " + err.message;
+        if (found) break;
+      }
+
+      if (!found) {
+        responseDiv.innerHTML = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
       }
     }
   </script>
