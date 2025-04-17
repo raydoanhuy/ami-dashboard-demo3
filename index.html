@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <meta charset="UTF-8">
   <title>AMI AI Dashboard</title>
   <link rel="stylesheet" href="style.css">
@@ -121,7 +122,6 @@
       <th>Ngày COD</th>
       <th>Nghiệm Thu</th>
       <th>Giá FIT kỳ vọng</th>
-      <th>Tải PDF</th>
       <th>Tải báo cáo</th>
     </tr>
   </thead>
@@ -131,24 +131,21 @@
       <td>04/05/2019 / 26/06/2019</td>
       <td>11/09/2019</td>
       <td>FIT 1 (9,35 cent/kWh)</td>
-      <td><button onclick="downloadPDF('Khánh Hòa - AMI')">📥</button></td>
-      <td><button onclick="downloadPDF('Khánh Hòa - AMI')">📥</button></td>
+      <td><button onclick="downloadPDF('Khánh Hòa - AMI')">Tải</button></td>
     </tr>
     <tr>
       <td>BT1 - AMI</td>
       <td>26/10/2021</td>
       <td>-</td>
       <td>FIT 1</td>
-      <td><button onclick="downloadPDF('BT1 - AMI')">📥</button></td>
-      <td><button onclick="downloadPDF('BT1 - AMI')">📥</button></td>
+      <td><button onclick="downloadPDF('BT1 - AMI')">Tải</button></td>
     </tr>
     <tr>
       <td>BMT - AMI</td>
       <td>Sau COD</td>
       <td>-</td>
       <td>FIT 1</td>
-      <td><button onclick="downloadPDF('BMT - AMI')">📥</button></td>
-      <td><button onclick="downloadPDF('BMT - AMI')">📥</button></td>
+      <td><button onclick="downloadPDF('BMT - AMI')">Tải</button></td>
     </tr>
   </tbody>
 </table>
@@ -274,11 +271,32 @@ function loadLegalData() {
   });
 }
 function downloadPDF(projectName) {
-  const doc = new window.jspdf.jsPDF();
-  doc.text("Báo Cáo AI Tự Động Hóa Cho Dự Án", 10, 10);
-  doc.text("Dự Án: " + projectName, 10, 20);
-  doc.text("Ngày: " + new Date().toLocaleDateString("vi-VN"), 10, 30);
-  doc.text("Báo cáo được tạo từ hệ thống AMI AI Dashboard.", 10, 40);
+  const doc = new jspdf.jsPDF();
+
+  doc.setFont('helvetica');
+  doc.setFontSize(12);
+  doc.text("BÁO CÁO AI TỰ ĐỘNG HÓA CHO DỰ ÁN", 14, 15);
+  doc.text("Dự án: " + projectName, 14, 25);
+  doc.text("Ngày tạo: " + new Date().toLocaleDateString("vi-VN"), 14, 32);
+
+  const data = {
+    "Khánh Hòa - AMI": ["04/05/2019 / 26/06/2019", "11/09/2019", "FIT 1 (9,35 cent/kWh)"],
+    "BT1 - AMI": ["26/10/2021", "-", "FIT 1"],
+    "BMT - AMI": ["Sau COD", "-", "FIT 1"]
+  };
+
+  if (data[projectName]) {
+    doc.autoTable({
+      head: [["Ngày COD", "Nghiệm Thu", "Giá FIT kỳ vọng"]],
+      body: [data[projectName]],
+      startY: 40,
+      styles: { font: "helvetica", fontSize: 11 },
+      headStyles: { fillColor: [22, 160, 133] }
+    });
+  } else {
+    doc.text("Không tìm thấy dữ liệu dự án.", 14, 45);
+  }
+
   doc.save(projectName.replaceAll(' ', '_') + '_bao_cao_AI.pdf');
 }
 
