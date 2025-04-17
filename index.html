@@ -34,7 +34,7 @@
       background: #e9f1fb;
       border-radius: 8px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       gap: 10px;
     }
     .chatbox input {
@@ -140,7 +140,7 @@ async function askLegalBot() {
   const entry = document.createElement("div");
   entry.className = "chat-entry";
   entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
-  responseDiv.prepend(entry);
+  responseDiv.appendChild(entry);
   inputEl.value = "";
 }
 
