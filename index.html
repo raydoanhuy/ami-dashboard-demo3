@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta charset="UTF-8">
   <title>AMI AI Dashboard</title>
   <link rel="stylesheet" href="style.css">
@@ -122,24 +123,13 @@
         <th>Giá FIT kỳ vọng</th>
       </tr>
     </thead>
-    <tbody>
+    $1
       <tr>
-        <td>Khánh Hòa - AMI</td>
-        <td>04/05/2019 / 26/06/2019</td>
-        <td>11/09/2019</td>
-        <td>FIT 1 (9,35 cent/kWh)</td>
-      </tr>
-      <tr>
-        <td>BT1 - AMI</td>
-        <td>26/10/2021</td>
-        <td>-</td>
-        <td>FIT 1</td>
-      </tr>
-      <tr>
-        <td>BMT - AMI</td>
-        <td>Sau COD</td>
-        <td>-</td>
-        <td>FIT 1</td>
+        <td colspan="4" style="text-align: right;">
+          <button onclick="downloadPDF('Khánh Hòa - AMI')">📥 Tải PDF</button>
+          <button onclick="downloadPDF('BT1 - AMI')">📥 Tải PDF</button>
+          <button onclick="downloadPDF('BMT - AMI')">📥 Tải PDF</button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -264,6 +254,15 @@ function loadLegalData() {
     tbody.appendChild(row);
   });
 }
+function downloadPDF(projectName) {
+  const doc = new window.jspdf.jsPDF();
+  doc.text("Báo Cáo AI Tự Động Hóa Cho Dự Án", 10, 10);
+  doc.text("Dự Án: " + projectName, 10, 20);
+  doc.text("Ngày: " + new Date().toLocaleDateString("vi-VN"), 10, 30);
+  doc.text("Báo cáo được tạo từ hệ thống AMI AI Dashboard.", 10, 40);
+  doc.save(projectName.replaceAll(' ', '_') + '_bao_cao_AI.pdf');
+}
+
 </script>
 </body>
 </html>
