@@ -115,24 +115,39 @@
   <h2>AI Quản Lý Đầu Tư</h2>
   <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
   <table>
-    <thead>
-      <tr>
-        <th>Dự Án</th>
-        <th>Ngày COD</th>
-        <th>Nghiệm Thu</th>
-        <th>Giá FIT kỳ vọng</th>
-      </tr>
-    </thead>
-    $1
-      <tr>
-        <td colspan="4" style="text-align: right;">
-          <button onclick="downloadPDF('Khánh Hòa - AMI')">📥 Tải PDF</button>
-          <button onclick="downloadPDF('BT1 - AMI')">📥 Tải PDF</button>
-          <button onclick="downloadPDF('BMT - AMI')">📥 Tải PDF</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th>Dự Án</th>
+      <th>Ngày COD</th>
+      <th>Nghiệm Thu</th>
+      <th>Giá FIT kỳ vọng</th>
+      <th>Tải báo cáo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Khánh Hòa - AMI</td>
+      <td>04/05/2019 / 26/06/2019</td>
+      <td>11/09/2019</td>
+      <td>FIT 1 (9,35 cent/kWh)</td>
+      <td><button onclick="downloadPDF('Khánh Hòa - AMI')">📥</button></td>
+    </tr>
+    <tr>
+      <td>BT1 - AMI</td>
+      <td>26/10/2021</td>
+      <td>-</td>
+      <td>FIT 1</td>
+      <td><button onclick="downloadPDF('BT1 - AMI')">📥</button></td>
+    </tr>
+    <tr>
+      <td>BMT - AMI</td>
+      <td>Sau COD</td>
+      <td>-</td>
+      <td>FIT 1</td>
+      <td><button onclick="downloadPDF('BMT - AMI')">📥</button></td>
+    </tr>
+  </tbody>
+</table>
 </div>
 
   <div id="tab-risk" class="tab">
