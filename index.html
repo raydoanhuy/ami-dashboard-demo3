@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  
+
   <meta charset="UTF-8">
   <title>AMI AI Dashboard</title>
   <link rel="stylesheet" href="style.css">
@@ -86,85 +88,10 @@
       background-color: #ddffdd;
     }
   </style>
-</head>
-<body>
-  <h1>📊 AMI AI Dashboard</h1>
-
-  <nav>
-    <button onclick="showTab('legal')">AI Pháp Lý</button>
-    <button onclick="showTab('investment')">AI Đầu Tư</button>
-    <button onclick="showTab('risk')">AI Cảnh Báo</button>
-  </nav>
-
-  <div id="tab-legal" class="tab">
-    <h2>AI Pháp Lý</h2>
-    <p>Trò chuyện với chatbot pháp lý AMI</p>
-    <div class="chatbox">
-  <div style="display: flex; gap: 10px; align-items: center;">
-    <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="flex: 1" onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
-    <button onclick="askLegalBot()" style="background: #007bff; border: none; padding: 10px 15px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer;">
-      ↑
-    </button>
-  </div>
-  <div id="legal-chat-response" class="chat-history"></div>
-    </div>
-  </div>
-
-  <div id="tab-investment" class="tab">
-  <h2>AI Quản Lý Đầu Tư</h2>
-  <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Dự Án</th>
-        <th>Ngày COD</th>
-        <th>Nghiệm Thu</th>
-        <th>Giá FIT kỳ vọng</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Khánh Hòa - AMI</td>
-        <td>04/05/2019 / 26/06/2019</td>
-        <td>11/09/2019</td>
-        <td>FIT 1 (9,35 cent/kWh)</td>
-      </tr>
-      <tr>
-        <td>BT1 - AMI</td>
-        <td>26/10/2021</td>
-        <td>-</td>
-        <td>FIT 1</td>
-      </tr>
-      <tr>
-        <td>BMT - AMI</td>
-        <td>Sau COD</td>
-        <td>-</td>
-        <td>FIT 1</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-  <div id="tab-risk" class="tab">
-    <h2>AI Cảnh Báo Rủi Ro</h2>
-    <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
-    <button onclick="loadLegalData()">Hiển thị kết quả phân tích pháp lý</button>
-    <table>
-      <thead>
-        <tr>
-          <th>Dự Án</th>
-          <th>Ngày COD</th>
-          <th>Nghiệm Thu</th>
-          <th>FIT</th>
-          <th>Nguy Cơ</th>
-          <th>Khuyến Nghị</th>
-        </tr>
-      </thead>
-      <tbody id="legal-data"></tbody>
-    </table>
-  </div>
 
 <script>
+// ✅ Đã reset phần script để tránh lỗi trắng màn hình
+
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -184,7 +111,10 @@ const faqData = {
   }
 };
 
-function askLegalBot() {
+async function askLegalBot() {
+  const proceed = await checkLimitBeforeAsk();
+  if (!proceed) return;
+
   const inputEl = document.getElementById("legal-chat-input");
   const input = inputEl.value.trim().toLowerCase();
   const responseDiv = document.getElementById("legal-chat-response");
@@ -212,7 +142,6 @@ function askLegalBot() {
   entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
   responseDiv.appendChild(entry);
   inputEl.value = "";
-  responseDiv.scrollTop = responseDiv.scrollHeight;
 }
 
 function showTab(id) {
@@ -263,6 +192,29 @@ function loadLegalData() {
     `;
     tbody.appendChild(row);
   });
+}
+
+// Giới hạn 10 câu hỏi theo IP
+async function checkLimitBeforeAsk() {
+  try {
+    const ip = await fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => data.ip);
+
+    const key = `legal-ask-count-${ip}`;
+    let count = parseInt(localStorage.getItem(key) || "0");
+
+    if (count >= 10) {
+      alert("Bạn đã hỏi hết giới hạn câu hỏi pháp lý. Bạn có thể tiếp tục tra cứu câu hỏi bằng cách trả phí.");
+      return false;
+    }
+
+    localStorage.setItem(key, count + 1);
+    return true;
+  } catch (err) {
+    console.error("Không thể lấy IP hoặc kiểm tra giới hạn:", err);
+    return true;
+  }
 }
 </script>
 </body>
