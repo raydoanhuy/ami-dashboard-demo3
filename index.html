@@ -16,14 +16,7 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
-    button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #007bff;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+}
     button:hover {
       background-color: #0056b3;
     }
@@ -110,7 +103,7 @@
   <div style="display: flex; gap: 10px; align-items: center;">
     <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="flex: 1" onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
     <button onclick="askLegalBot()" style="background: #007bff; border: none; padding: 10px 15px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer;">
-      ➤
+      ⬆
     </button>
   </div>
   <div id="legal-chat-response" class="chat-history"></div>
