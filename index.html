@@ -273,7 +273,7 @@ function loadLegalData() {
 function downloadPDF(projectName) {
   const doc = new jspdf.jsPDF();
 
-  doc.setFont('helvetica');
+  doc.setFont('times', 'normal');
   doc.setFontSize(12);
   doc.text("BÁO CÁO AI TỰ ĐỘNG HÓA CHO DỰ ÁN", 14, 15);
   doc.text("Dự án: " + projectName, 14, 25);
@@ -290,7 +290,7 @@ function downloadPDF(projectName) {
       head: [["Ngày COD", "Nghiệm Thu", "Giá FIT kỳ vọng"]],
       body: [data[projectName]],
       startY: 40,
-      styles: { font: "helvetica", fontSize: 11 },
+      styles: { font: "times", fontSize: 11 },
       headStyles: { fillColor: [22, 160, 133] }
     });
   } else {
