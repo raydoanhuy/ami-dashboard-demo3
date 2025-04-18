@@ -165,6 +165,15 @@
   </div>
 
 <script>
+// Hàm loại bỏ dấu tiếng Việt
+function removeDiacritics(str) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+}
+
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -186,7 +195,7 @@ const faqData = {
 
 function askLegalBot() {
   const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim().toLowerCase();
+  const input = inputEl.value.trim();
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
@@ -208,12 +217,17 @@ function askLegalBot() {
     return;
   }
 
-  // Xử lý câu hỏi bình thường nếu chưa vượt quá 10 câu
+  // Chuyển input về không dấu để so sánh
+  const inputNoDiacritics = removeDiacritics(input.toLowerCase());
+
+  // Xử lý câu hỏi
   let found = false;
   let answer = "";
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, ans] of Object.entries(questions)) {
-      if (input.includes(question)) {
+      // Chuyển câu hỏi trong faqData về không dấu
+      const questionNoDiacritics = removeDiacritics(question.toLowerCase());
+      if (inputNoDiacritics.includes(questionNoDiacritics)) {
         answer = "🧠 " + ans;
         found = true;
         break;
