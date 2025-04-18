@@ -165,15 +165,6 @@
   </div>
 
 <script>
-// Hàm loại bỏ dấu tiếng Việt
-function removeDiacritics(str) {
-  return str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D");
-}
-
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -195,21 +186,15 @@ const faqData = {
 
 function askLegalBot() {
   const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim();
+  const input = inputEl.value.trim().toLowerCase();
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  // Chuyển input về không dấu để so sánh
-  const inputNoDiacritics = removeDiacritics(input.toLowerCase());
-
-  // Xử lý câu hỏi
   let found = false;
   let answer = "";
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, ans] of Object.entries(questions)) {
-      // Chuyển câu hỏi trong faqData về không dấu
-      const questionNoDiacritics = removeDiacritics(question.toLowerCase());
-      if (inputNoDiacritics.includes(questionNoDiacritics)) {
+      if (input.includes(question)) {
         answer = "🧠 " + ans;
         found = true;
         break;
@@ -225,9 +210,9 @@ function askLegalBot() {
   const entry = document.createElement("div");
   entry.className = "chat-entry";
   entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
-  responseDiv.prepend(entry);
+  responseDiv.prepend(entry); // Thêm tin nhắn mới vào đầu
   inputEl.value = "";
-  responseDiv.scrollTop = 0;
+  responseDiv.scrollTop = 0; // Cuộn lên đầu để thấy tin nhắn mới nhất
 }
 
 function showTab(id) {
@@ -267,7 +252,7 @@ function loadLegalData() {
   tbody.innerHTML = "";
   projectsLegal.forEach(p => {
     const row = document.createElement("tr");
-    row SrinivasanclassName = `risk-${p.risk}`;
+    row.className = `risk-${p.risk}`;
     row.innerHTML = `
       <td>${p.name}</td>
       <td>${p.cod}</td>
