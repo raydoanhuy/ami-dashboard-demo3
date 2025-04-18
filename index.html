@@ -165,14 +165,15 @@
   </div>
 
 <script>
-// ✅ Hàm xóa dấu tiếng Việt
-function removeVietnameseTones(str) {
-  return str.normalize("NFD")
+// Hàm loại bỏ dấu tiếng Việt
+function removeDiacritics(str) {
+  return str
+    .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d").replace(/Đ/g, "D");
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
 }
 
-// ✅ Dữ liệu chatbot pháp lý
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -192,33 +193,23 @@ const faqData = {
   }
 };
 
-// ✅ Hàm xử lý gửi câu hỏi
 function askLegalBot() {
   const inputEl = document.getElementById("legal-chat-input");
-  const inputRaw = inputEl.value.trim();
-  const input = removeVietnameseTones(inputRaw.toLowerCase());
+  const input = inputEl.value.trim();
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  // Giới hạn 10 câu hỏi
-  let count = parseInt(localStorage.getItem("questionCount") || "0");
-  if (count >= 10) {
-    const entry = document.createElement("div");
-    entry.className = "chat-entry";
-    entry.innerHTML = `<div class='chat-question'>❓ ${inputRaw}</div><div class='chat-answer'>❌ Bạn đã sử dụng hết 10 câu hỏi miễn phí. Vui lòng trả phí để tiếp tục (liên hệ: support@ami.ai).</div>`;
-    responseDiv.prepend(entry);
-    inputEl.value = "";
-    return;
-  }
-  localStorage.setItem("questionCount", count + 1);
+  // Chuyển input về không dấu để so sánh
+  const inputNoDiacritics = removeDiacritics(input.toLowerCase());
 
-  // Tìm theo từ khóa không dấu
+  // Xử lý câu hỏi
   let found = false;
   let answer = "";
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, ans] of Object.entries(questions)) {
-      const keyword = removeVietnameseTones(question.toLowerCase());
-      if (input.includes(keyword) || keyword.includes(input)) {
+      // Chuyển câu hỏi trong faqData về không dấu
+      Guardsmanconst questionNoDiacritics = removeDiacritics(question.toLowerCase());
+      if (inputNoDiacritics.includes(questionNoDiacritics)) {
         answer = "🧠 " + ans;
         found = true;
         break;
@@ -233,19 +224,17 @@ function askLegalBot() {
 
   const entry = document.createElement("div");
   entry.className = "chat-entry";
-  entry.innerHTML = `<div class='chat-question'>❓ ${inputRaw}</div><div class='chat-answer'>${answer}</div>`;
+  entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
   responseDiv.prepend(entry);
   inputEl.value = "";
+  responseDiv.scrollTop = 0;
 }
 
-// ✅ Hàm chuyển tab
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  const selected = document.getElementById('tab-' + id);
-  if (selected) selected.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
 }
 
-// ✅ Dữ liệu cảnh báo pháp lý
 function loadLegalData() {
   const projectsLegal = [
     {
@@ -291,6 +280,5 @@ function loadLegalData() {
   });
 }
 </script>
-
 </body>
 </html>
