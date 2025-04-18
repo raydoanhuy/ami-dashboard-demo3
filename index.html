@@ -84,6 +84,29 @@
     .chat-answer {
       margin-top: 5px;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .risk-cao {
+      background-color: #ffd6d6;
+    }
+    .risk-trungbinh {
+      background-color: #fff5cc;
+    }
+    .risk-thap {
+      background-color: #ddffdd;
+    }
   </style>
 </head>
 <body>
@@ -110,13 +133,55 @@
   <div id="tab-investment" class="tab">
     <h2>AI Quản Lý Đầu Tư</h2>
     <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
-    <!-- Thêm nội dung bảng đầu tư nếu cần -->
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>Giá FIT kỳ vọng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Khánh Hòa - AMI</td>
+          <td>04/05/2019 / 26/06/2019</td>
+          <td>11/09/2019</td>
+          <td>FIT 1 (9,35 cent/kWh)</td>
+        </tr>
+        <tr>
+          <td>BT1 - AMI</td>
+          <td>26/10/2021</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+        <tr>
+          <td>BMT - AMI</td>
+          <td>Sau COD</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div id="tab-risk" class="tab">
     <h2>AI Cảnh Báo Rủi Ro</h2>
     <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
-    <!-- Thêm nội dung bảng rủi ro nếu cần -->
+    <button onclick="loadLegalData()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Hiển thị kết quả phân tích pháp lý</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>FIT</th>
+          <th>Nguy Cơ</th>
+          <th>Khuyến Nghị</th>
+        </tr>
+      </thead>
+      <tbody id="legal-data"></tbody>
+    </table>
   </div>
 
 <script>
@@ -135,6 +200,30 @@ const faqData = {
     "hợp đồng lao động có bắt buộc công chứng không": {
       answer: "Không. Hợp đồng lao động không bắt buộc công chứng, trừ một số trường hợp đặc biệt.",
       keywords: ["hợp đồng", "lao động", "công chứng", "bắt buộc"]
+    },
+    "người lao động nghỉ việc có cần báo trước không": {
+      answer: "Có. Thông thường cần báo trước 30 ngày (hợp đồng xác định thời hạn).",
+      keywords: ["lao động", "nghỉ việc", "báo trước", "người lao động"]
+    }
+  },
+  "hợp đồng": {
+    "hợp đồng miệng có giá trị pháp lý không": {
+      answer: "Có. Nhưng rất khó chứng minh khi xảy ra tranh chấp nếu không có bằng chứng đi kèm.",
+      keywords: ["hợp đồng", "miệng", "giá trị", "pháp lý", "tranh chấp"]
+    },
+    "phạt vi phạm trong hợp đồng là bao nhiêu": {
+      answer: "Phạt vi phạm không vượt quá 8% giá trị phần nghĩa vụ vi phạm (theo Luật Thương mại).",
+      keywords: ["phạt", "vi phạm", "hợp đồng", "nghĩa vụ", "thương mại"]
+    }
+  },
+  "sở hữu trí tuệ": {
+    "đăng ký bản quyền logo ở đâu": {
+      answer: "Tại Cục Bản quyền tác giả - Bộ Văn hóa, Thể thao và Du lịch.",
+      keywords: ["đăng ký", "bản quyền", "logo", "cục bản quyền", "văn hóa"]
+    },
+    "logo chưa đăng ký có được bảo vệ không": {
+      answer: "Chưa. Logo cần đăng ký để có hiệu lực pháp lý và được pháp luật bảo hộ.",
+      keywords: ["logo", "đăng ký", "bảo vệ", "pháp lý", "bản quyền"]
     }
   }
 };
@@ -145,13 +234,11 @@ function askLegalBot() {
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  // Tách câu hỏi thành các từ
   const inputWords = input.split(/\s+/).filter(word => word.length > 2);
   let bestMatch = null;
   let maxScore = 0;
-  const minScoreThreshold = 1; // Giảm ngưỡng để dễ khớp hơn
+  const minScoreThreshold = 1;
 
-  // Tìm câu hỏi khớp nhất
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, data] of Object.entries(questions)) {
       let score = 0;
@@ -167,12 +254,10 @@ function askLegalBot() {
     }
   }
 
-  // Tạo câu trả lời
   const answer = bestMatch
     ? `🧠 ${bestMatch.answer}`
     : "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
 
-  // Thêm tin nhắn vào lịch sử
   const entry = document.createElement("div");
   entry.className = "chat-entry";
   entry.innerHTML = `<div class="chat-question">❓ ${inputEl.value}</div><div class="chat-answer">${answer}</div>`;
@@ -186,8 +271,40 @@ function showTab(id) {
   document.getElementById(`tab-${id}`).classList.add('active');
 }
 
-// Mở tab mặc định
-showTab('legal');
-</script>
-</body>
-</html>
+function loadLegalData() {
+  const projectsLegal = [
+    {
+      name: "Khánh Hòa - AMI",
+      cod: "26/06/2019",
+      acceptance: "11/09/2019",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Cung cấp biên bản nộp hồ sơ từ tháng 7/2019 để chứng minh thiện chí tuân thủ trước Thông tư 10/2023."
+    },
+    {
+      name: "BT1 - AMI",
+      cod: "16/10/2021",
+      acceptance: "26/10/2021",
+      fit: "FIT 1",
+      risk: "trungbinh",
+      recommendation: "Cân nhắc dời ngày COD về sau nghiệm thu để hợp thức FIT 1 và giảm nguy cơ hồi tố."
+    },
+    {
+      name: "BMT - AMI",
+      cod: "Đang xác minh",
+      acceptance: "Sau COD",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Bổ sung giấy phép hoạt động thủy lộ và lập luận về bản chất pháp lý quyền sử dụng đất."
+    }
+  ];
+
+  const tbody = document.getElementById("legal-data");
+  tbody.innerHTML = "";
+  projectsLegal.forEach(p => {
+    const row = document.createElement("tr");
+    row.className = `risk-${p.risk}`;
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.cod}</td>
+      <td>${p.accept худ.
