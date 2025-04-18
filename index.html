@@ -113,9 +113,9 @@
   <h1>📊 AMI AI Dashboard</h1>
 
   <nav>
-    <button onclick="showTab('legal')">AI Pháp Lý</button>
-    <button onclick="showTab('investment')">AI Đầu Tư</button>
-    <button onclick="showTab('risk')">AI Cảnh Báo</button>
+    <button data-tab="legal">AI Pháp Lý</button>
+    <button data-tab="investment">AI Đầu Tư</button>
+    <button data-tab="risk">AI Cảnh Báo</button>
   </nav>
 
   <div id="tab-legal" class="tab active">
@@ -267,9 +267,27 @@ function askLegalBot() {
 }
 
 function showTab(id) {
+  console.log(`Switching to tab: ${id}`); // Debug
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.getElementById(`tab-${id}`).classList.add('active');
+  const tabElement = document.getElementById(`tab-${id}`);
+  if (tabElement) {
+    tabElement.classList.add('active');
+  } else {
+    console.error(`Tab with id tab-${id} not found`);
+  }
 }
+
+// Gắn sự kiện cho các nút tab
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('nav button').forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.getAttribute('data-tab');
+      showTab(tabId);
+    });
+  });
+  // Mở tab mặc định
+  showTab('legal');
+});
 
 function loadLegalData() {
   const projectsLegal = [
@@ -307,4 +325,14 @@ function loadLegalData() {
     row.innerHTML = `
       <td>${p.name}</td>
       <td>${p.cod}</td>
-      <td>${p.accept худ.
+      <td>${p.acceptance}</td>
+      <td>${p.fit}</td>
+      <td>${p.risk.toUpperCase()}</td>
+      <td>${p.recommendation}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+</script>
+</body>
+</html>
