@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>AMI AI Dashboard</title>
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       font-family: sans-serif;
@@ -47,7 +46,7 @@
     }
     .chat-history {
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       gap: 10px;
     }
     .chat-entry {
@@ -88,83 +87,57 @@
   </style>
 </head>
 <body>
-  <h1>📊 AMI AI Dashboard</h1>
 
-  <nav>
-    <button onclick="showTab('legal')">AI Pháp Lý</button>
-    <button onclick="showTab('investment')">AI Đầu Tư</button>
-    <button onclick="showTab('risk')">AI Cảnh Báo</button>
-  </nav>
+<!-- NAVIGATION -->
+<nav>
+  <button onclick="showTab('legal')">AI Pháp Lý</button>
+  <button onclick="showTab('investment')">AI Đầu Tư</button>
+  <button onclick="showTab('risk')">Cảnh Báo Rủi Ro</button>
+</nav>
 
-  <div id="tab-legal" class="tab">
-    <h2>AI Pháp Lý</h2>
-    <p>Trò chuyện với chatbot pháp lý AMI</p>
-    <div class="chatbox">
-      <div style="display: flex; gap: 10px; align-items: center;">
-        <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." style="flex: 1" onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
-        <button onclick="askLegalBot()" style="background: #007bff; border: none; padding: 10px 15px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer;">
-          ↑
-        </button>
-      </div>
-      <div id="legal-chat-response" class="chat-history"></div>
-    </div>
+<!-- TAB PHÁP LÝ -->
+<div id="tab-legal" class="tab active">
+  <h2>Chatbot Pháp Lý</h2>
+  <div class="chatbox">
+    <input type="text" id="legal-chat-input" placeholder="Nhập câu hỏi pháp lý..." onkeydown="if(event.key==='Enter') askLegalBot()">
+    <div id="legal-chat-response" class="chat-history"></div>
   </div>
 
-  <div id="tab-investment" class="tab">
-    <h2>AI Quản Lý Đầu Tư</h2>
-    <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
-    <table>
-      <thead>
-        <tr>
-          <th>Dự Án</th>
-          <th>Ngày COD</th>
-          <th>Nghiệm Thu</th>
-          <th>Giá FIT kỳ vọng</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Khánh Hòa - AMI</td>
-          <td>04/05/2019 / 26/06/2019</td>
-          <td>11/09/2019</td>
-          <td>FIT 1 (9,35 cent/kWh)</td>
-        </tr>
-        <tr>
-          <td>BT1 - AMI</td>
-          <td>26/10/2021</td>
-          <td>-</td>
-          <td>FIT 1</td>
-        </tr>
-        <tr>
-          <td>BMT - AMI</td>
-          <td>Sau COD</td>
-          <td>-</td>
-          <td>FIT 1</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h3>Phân Tích Nguy Cơ Dự Án</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Dự án</th>
+        <th>COD</th>
+        <th>Nghiệm thu</th>
+        <th>Giá FIT</th>
+        <th>Rủi ro</th>
+        <th>Khuyến nghị</th>
+      </tr>
+    </thead>
+    <tbody id="legal-data"></tbody>
+  </table>
+</div>
 
-  <div id="tab-risk" class="tab">
-    <h2>AI Cảnh Báo Rủi Ro</h2>
-    <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
-    <button onclick="loadLegalData()">Hiển thị kết quả phân tích pháp lý</button>
-    <table>
-      <thead>
-        <tr>
-          <th>Dự Án</th>
-          <th>Ngày COD</th>
-          <th>Nghiệm Thu</th>
-          <th>FIT</th>
-          <th>Nguy Cơ</th>
-          <th>Khuyến Nghị</th>
-        </tr>
-      </thead>
-      <tbody id="legal-data"></tbody>
-    </table>
-  </div>
+<!-- TAB ĐẦU TƯ -->
+<div id="tab-investment" class="tab">
+  <h2>Báo cáo AI đầu tư</h2>
+</div>
+
+<!-- TAB RỦI RO -->
+<div id="tab-risk" class="tab">
+  <h2>Cảnh báo rủi ro</h2>
+</div>
 
 <script>
+// ✅ Xóa dấu tiếng Việt
+function removeVietnameseTones(str) {
+  return str.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d").replace(/Đ/g, "D");
+}
+
+// ✅ Dữ liệu câu hỏi mẫu
 const faqData = {
   "thuế": {
     "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
@@ -184,36 +157,24 @@ const faqData = {
   }
 };
 
-function askLegalBot() {
+// ✅ Gửi câu hỏi vào chatbot
+async function askLegalBot() {
+  const proceed = await checkLimitBeforeAsk();
+  if (!proceed) return;
+
   const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim().toLowerCase();
+  const inputRaw = inputEl.value.trim();
+  const input = removeVietnameseTones(inputRaw.toLowerCase());
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  // Lấy số câu hỏi đã hỏi từ localStorage, nếu chưa có thì khởi tạo là 0
-  let questionCount = parseInt(localStorage.getItem("questionCount") || "0");
-
-  // Tăng số câu hỏi lên 1
-  questionCount += 1;
-  localStorage.setItem("questionCount", questionCount);
-
-  // Kiểm tra giới hạn 10 câu
-  if (questionCount > 10) {
-    const entry = document.createElement("div");
-    entry.className = "chat-entry";
-    entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>❌ Bạn đã sử dụng hết 10 câu hỏi miễn phí. Vui lòng trả phí để tiếp tục (liên hệ: support@ami.ai).</div>`;
-    responseDiv.prepend(entry);
-    inputEl.value = "";
-    responseDiv.scrollTop = 0;
-    return;
-  }
-
-  // Xử lý câu hỏi bình thường nếu chưa vượt quá 10 câu
   let found = false;
   let answer = "";
+
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, ans] of Object.entries(questions)) {
-      if (input.includes(question)) {
+      const keyword = removeVietnameseTones(question.toLowerCase());
+      if (input.includes(keyword) || keyword.includes(input)) {
         answer = "🧠 " + ans;
         found = true;
         break;
@@ -228,17 +189,18 @@ function askLegalBot() {
 
   const entry = document.createElement("div");
   entry.className = "chat-entry";
-  entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
-  responseDiv.prepend(entry);
+  entry.innerHTML = `<div class='chat-question'>❓ ${inputRaw}</div><div class='chat-answer'>${answer}</div>`;
+  responseDiv.appendChild(entry);
   inputEl.value = "";
-  responseDiv.scrollTop = 0;
 }
 
+// ✅ Hiện tab theo nút bấm
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
 }
 
+// ✅ Dữ liệu rủi ro dự án pháp lý
 function loadLegalData() {
   const projectsLegal = [
     {
@@ -283,6 +245,33 @@ function loadLegalData() {
     tbody.appendChild(row);
   });
 }
+
+// ✅ Giới hạn 10 câu hỏi theo IP
+async function checkLimitBeforeAsk() {
+  try {
+    const ip = await fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => data.ip);
+
+    const key = `legal-ask-count-${ip}`;
+    let count = parseInt(localStorage.getItem(key) || "0");
+
+    if (count >= 10) {
+      alert("Bạn đã hỏi hết giới hạn câu hỏi pháp lý. Bạn có thể tiếp tục tra cứu câu hỏi bằng cách trả phí.");
+      return false;
+    }
+
+    localStorage.setItem(key, count + 1);
+    return true;
+  } catch (err) {
+    console.error("Không thể lấy IP hoặc kiểm tra giới hạn:", err);
+    return true;
+  }
+}
+
+// ✅ Tải dữ liệu khi load trang
+window.onload = loadLegalData;
 </script>
+
 </body>
 </html>
