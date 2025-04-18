@@ -199,24 +199,6 @@ function askLegalBot() {
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  // Lấy số câu hỏi đã hỏi từ localStorage, nếu chưa có thì khởi tạo là 0
-  let questionCount = parseInt(localStorage.getItem("questionCount") || "0");
-
-  // Tăng số câu hỏi lên 1
-  questionCount += 1;
-  localStorage.setItem("questionCount", questionCount);
-
-  // Kiểm tra giới hạn 10 câu
-  if (questionCount > 10) {
-    const entry = document.createElement("div");
-    entry.className = "chat-entry";
-    entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>❌ Bạn đã sử dụng hết 10 câu hỏi miễn phí. Vui lòng trả phí để tiếp tục (liên hệ: support@ami.ai).</div>`;
-    responseDiv.prepend(entry);
-    inputEl.value = "";
-    responseDiv.scrollTop = 0;
-    return;
-  }
-
   // Chuyển input về không dấu để so sánh
   const inputNoDiacritics = removeDiacritics(input.toLowerCase());
 
@@ -285,7 +267,7 @@ function loadLegalData() {
   tbody.innerHTML = "";
   projectsLegal.forEach(p => {
     const row = document.createElement("tr");
-    row.className = `risk-${p.risk}`;
+    row SrinivasanclassName = `risk-${p.risk}`;
     row.innerHTML = `
       <td>${p.name}</td>
       <td>${p.cod}</td>
