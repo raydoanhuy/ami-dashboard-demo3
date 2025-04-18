@@ -165,36 +165,28 @@
   </div>
 
 <script>
-const faqData = {
-  "thuế": {
-    "thuế thu nhập cá nhân là gì": "Thuế TNCN là khoản tiền mà cá nhân phải nộp khi có thu nhập chịu thuế theo quy định.",
-    "doanh nghiệp có phải đóng thuế gtgt không": "Doanh nghiệp có doanh thu đều phải kê khai và nộp thuế GTGT nếu không thuộc diện miễn."
-  },
-  "lao động": {
-    "hợp đồng lao động có bắt buộc công chứng không": "Không. Hợp đồng lao động không bắt buộc công chứng, trừ một số trường hợp đặc biệt.",
-    "người lao động nghỉ việc có cần báo trước không": "Có. Thông thường cần báo trước 30 ngày (hợp đồng xác định thời hạn)."
-  },
-  "hợp đồng": {
-    "hợp đồng miệng có giá trị pháp lý không": "Có. Nhưng rất khó chứng minh khi xảy ra tranh chấp nếu không có bằng chứng đi kèm.",
-    "phạt vi phạm trong hợp đồng là bao nhiêu": "Phạt vi phạm không vượt quá 8% giá trị phần nghĩa vụ vi phạm (theo Luật Thương mại)."
-  },
-  "sở hữu trí tuệ": {
-    "đăng ký bản quyền logo ở đâu": "Tại Cục Bản quyền tác giả - Bộ Văn hóa, Thể thao và Du lịch.",
-    "logo chưa đăng ký có được bảo vệ không": "Chưa. Logo cần đăng ký để có hiệu lực pháp lý và được pháp luật bảo hộ."
-  }
-};
+// ✅ Hàm xóa dấu tiếng Việt
+function removeVietnameseTones(str) {
+  return str.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d").replace(/Đ/g, "D");
+}
 
+// ✅ Hàm chatbot nhận dạng từ khóa (không dấu + không cần gõ chính xác)
 function askLegalBot() {
   const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim().toLowerCase();
+  const inputRaw = inputEl.value.trim(); // Gốc người dùng gõ
+  const input = removeVietnameseTones(inputRaw.toLowerCase()); // Dạng chuẩn hóa
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
   let found = false;
   let answer = "";
+
   for (const [topic, questions] of Object.entries(faqData)) {
     for (const [question, ans] of Object.entries(questions)) {
-      if (input.includes(question)) {
+      const keyword = removeVietnameseTones(question.toLowerCase());
+      if (input.includes(keyword) || keyword.includes(input)) {
         answer = "🧠 " + ans;
         found = true;
         break;
@@ -209,61 +201,12 @@ function askLegalBot() {
 
   const entry = document.createElement("div");
   entry.className = "chat-entry";
-  entry.innerHTML = `<div class='chat-question'>❓ ${inputEl.value}</div><div class='chat-answer'>${answer}</div>`;
-  responseDiv.prepend(entry); // Thêm tin nhắn mới vào đầu
+  entry.innerHTML = `<div class='chat-question'>❓ ${inputRaw}</div><div class='chat-answer'>${answer}</div>`;
+  responseDiv.prepend(entry); // Hiển thị mới nhất ở đầu
   inputEl.value = "";
-  responseDiv.scrollTop = 0; // Cuộn lên đầu để thấy tin nhắn mới nhất
-}
-
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-}
-
-function loadLegalData() {
-  const projectsLegal = [
-    {
-      name: "Khánh Hòa - AMI",
-      cod: "26/06/2019",
-      acceptance: "11/09/2019",
-      fit: "FIT 1",
-      risk: "cao",
-      recommendation: "Cung cấp biên bản nộp hồ sơ từ tháng 7/2019 để chứng minh thiện chí tuân thủ trước Thông tư 10/2023."
-    },
-    {
-      name: "BT1 - AMI",
-      cod: "16/10/2021",
-      acceptance: "26/10/2021",
-      fit: "FIT 1",
-      risk: "trungbinh",
-      recommendation: "Cân nhắc dời ngày COD về sau nghiệm thu để hợp thức FIT 1 và giảm nguy cơ hồi tố."
-    },
-    {
-      name: "BMT - AMI",
-      cod: "Đang xác minh",
-      acceptance: "Sau COD",
-      fit: "FIT 1",
-      risk: "cao",
-      recommendation: "Bổ sung giấy phép hoạt động thủy lộ và lập luận về bản chất pháp lý quyền sử dụng đất."
-    }
-  ];
-
-  const tbody = document.getElementById("legal-data");
-  tbody.innerHTML = "";
-  projectsLegal.forEach(p => {
-    const row = document.createElement("tr");
-    row.className = `risk-${p.risk}`;
-    row.innerHTML = `
-      <td>${p.name}</td>
-      <td>${p.cod}</td>
-      <td>${p.acceptance}</td>
-      <td>${p.fit}</td>
-      <td>${p.risk.toUpperCase()}</td>
-      <td>${p.recommendation}</td>
-    `;
-    tbody.appendChild(row);
-  });
+  responseDiv.scrollTop = 0;
 }
 </script>
+
 </body>
 </html>
