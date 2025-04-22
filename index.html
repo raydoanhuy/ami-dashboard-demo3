@@ -135,5 +135,126 @@
       <div id="legal-chat-response" class="chat-history"></div>
     </div>
   </div>
+<div id="tab-investment" class="tab">
+    <h2>AI Quản Lý Đầu Tư</h2>
+    <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>Giá FIT kỳ vọng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Khánh Hòa - AMI</td>
+          <td>04/05/2019 / 26/06/2019</td>
+          <td>11/09/2019</td>
+          <td>FIT 1 (9,35 cent/kWh)</td>
+        </tr>
+        <tr>
+          <td>BT1 - AMI</td>
+          <td>26/10/2021</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+        <tr>
+          <td>BMT - AMI</td>
+          <td>Sau COD</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="tab-risk" class="tab">
+    <h2>AI Cảnh Báo Rủi Ro</h2>
+    <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
+    <button onclick="loadLegalData()" style="background: #5e564f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Hiển thị kết quả phân tích pháp lý</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>FIT</th>
+          <th>Nguy Cơ</th>
+          <th>Khuyến Nghị</th>
+        </tr>
+      </thead>
+      <tbody id="legal-data"></tbody>
+    </table>
+  </div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function askLegalBot() {
+  const inputEl = document.getElementById("legal-chat-input");
+  const input = inputEl.value.trim();
+  const responseDiv = document.getElementById("legal-chat-response");
+  if (!input) return;
+
+  const answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
+
+  const entry = document.createElement("div");
+  entry.className = "chat-entry";
+  entry.innerHTML = `<div class="chat-question">❓ ${input}</div><div class="chat-answer">${answer}</div>`;
+  responseDiv.prepend(entry);
+  inputEl.value = "";
+  responseDiv.scrollTop = 0;
+}
+
+function loadLegalData() {
+  const projectsLegal = [
+    {
+      name: "Khánh Hòa - AMI",
+      cod: "26/06/2019",
+      acceptance: "11/09/2019",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Cung cấp biên bản nộp hồ sơ từ tháng 7/2019 để chứng minh thiện chí tuân thủ trước Thông tư 10/2023."
+    },
+    {
+      name: "BT1 - AMI",
+      cod: "16/10/2021",
+      acceptance: "26/10/2021",
+      fit: "FIT 1",
+      risk: "trungbinh",
+      recommendation: "Cân nhắc dời ngày COD về sau nghiệm thu để hợp thức FIT 1 và giảm nguy cơ hồi tố."
+    },
+    {
+      name: "BMT - AMI",
+      cod: "Đang xác minh",
+      acceptance: "Sau COD",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Bổ sung giấy phép hoạt động thủy lộ và lập luận về bản chất pháp lý quyền sử dụng đất."
+    }
+  ];
+
+  const tbody = document.getElementById("legal-data");
+  tbody.innerHTML = "";
+  projectsLegal.forEach(p => {
+    const row = document.createElement("tr");
+    row.className = `risk-${p.risk}`;
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.cod}</td>
+      <td>${p.acceptance}</td>
+      <td>${p.fit}</td>
+      <td>${p.risk.toUpperCase()}</td>
+      <td>${p.recommendation}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+</script>
 </body>
 </html>
