@@ -9,172 +9,251 @@
       background: #f5f5e9;
       margin: 0;
       padding: 20px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #5e564f;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 600;
+      margin-bottom: 20px;
     }
     nav {
       display: flex;
       justify-content: center;
       gap: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
     nav button {
       background: transparent;
-      color: #665c50;
-      border: 1px solid #665c50;
+      color: #5e564f;
+      border: 1px solid #5e564f;
       padding: 8px 16px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
+      transition: background-color 0.3s ease;
     }
     nav button:hover {
-      background-color: #e0e0e0;
+      background: #e0e0e0;
     }
     .tab {
       display: none;
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: left;
     }
     .tab.active {
       display: block;
+      width: 100%;
+      max-width: 900px;
     }
     .chatbox {
-      margin-top: 20px;
+      margin-top: 30px;
       padding: 15px;
-      background: #eef5ff;
+      background: #ffffff;
+      border: 1px solid #ccc;
       border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .chatbox input {
-      width: 80%;
+      width: 100%;
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     .chatbox button {
-      background: #665c50;
-      color: white;
+      background: #5e564f;
       border: none;
-      padding: 10px;
+      padding: 10px 15px;
       border-radius: 50%;
+      color: white;
       font-size: 16px;
+      cursor: pointer;
     }
     .chat-history {
-      margin-top: 10px;
-      text-align: left;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
     }
     .chat-entry {
-      background: white;
+      background: #fff;
       padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    .chat-question {
+      font-weight: bold;
+      color: #5e564f;
+    }
+    .chat-answer {
+      margin-top: 5px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
+      background: white;
     }
     th, td {
+      padding: 10px;
       border: 1px solid #ccc;
-      padding: 8px 12px;
       text-align: left;
     }
     th {
-      background-color: #f0f0f0;
+      background: #f0f0f0;
     }
-    .risk-cao { background-color: #ffd6d6; }
-    .risk-trungbinh { background-color: #fff5cc; }
-    .risk-thap { background-color: #ddffdd; }
+    .risk-cao {
+      background-color: #ffd6d6;
+    }
+    .risk-trungbinh {
+      background-color: #fff5cc;
+    }
+    .risk-thap {
+      background-color: #ddffdd;
+    }
   </style>
 </head>
 <body>
-  <h1>AMI AI Dashboard</h1>
-
+  <h1>AMI AI DASHBOARD</h1>
   <nav>
     <button onclick="showTab('legal')">AI Pháp Lý</button>
     <button onclick="showTab('investment')">AI Đầu Tư</button>
     <button onclick="showTab('risk')">AI Cảnh Báo</button>
   </nav>
-
-  <div id="tab-legal" class="tab active">
+  <div id="tab-legal" class="tab">
     <h2>AI Pháp Lý</h2>
+    <p>Trò chuyện với chatbot pháp lý AMI</p>
     <div class="chatbox">
-      <div>
-        <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..."
-          onkeydown="if(event.key==='Enter') askLegalBot();">
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
         <button onclick="askLegalBot()">↑</button>
       </div>
       <div id="legal-chat-response" class="chat-history"></div>
     </div>
   </div>
-
-  <div id="tab-investment" class="tab">
+<div id="tab-investment" class="tab">
     <h2>AI Quản Lý Đầu Tư</h2>
-    <p>Đang cập nhật dữ liệu đầu tư...</p>
+    <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>Giá FIT kỳ vọng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Khánh Hòa - AMI</td>
+          <td>04/05/2019 / 26/06/2019</td>
+          <td>11/09/2019</td>
+          <td>FIT 1 (9,35 cent/kWh)</td>
+        </tr>
+        <tr>
+          <td>BT1 - AMI</td>
+          <td>26/10/2021</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+        <tr>
+          <td>BMT - AMI</td>
+          <td>Sau COD</td>
+          <td>-</td>
+          <td>FIT 1</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div id="tab-risk" class="tab">
     <h2>AI Cảnh Báo Rủi Ro</h2>
     <p>Phát hiện chênh lệch nghiệm thu - COD hoặc thiếu giấy phép...</p>
+    <button onclick="loadLegalData()" style="background: #5e564f; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Hiển thị kết quả phân tích pháp lý</button>
     <table>
       <thead>
-        <tr><th>Dự Án</th><th>COD</th><th>Nghiệm Thu</th><th>FIT</th><th>Nguy Cơ</th><th>Khuyến Nghị</th></tr>
+        <tr>
+          <th>Dự Án</th>
+          <th>Ngày COD</th>
+          <th>Nghiệm Thu</th>
+          <th>FIT</th>
+          <th>Nguy Cơ</th>
+          <th>Khuyến Nghị</th>
+        </tr>
       </thead>
-      <tbody>
-        <tr class="risk-cao"><td>Khánh Hòa - AMI</td><td>26/06/2019</td><td>11/09/2019</td><td>FIT 1</td><td>CAO</td><td>Hoàn thiện hồ sơ pháp lý tháng 7/2019.</td></tr>
-        <tr class="risk-trungbinh"><td>BT1 - AMI</td><td>16/10/2021</td><td>26/10/2021</td><td>FIT 1</td><td>TRUNG BÌNH</td><td>Cân nhắc dời COD hợp thức hóa FIT.</td></tr>
-      </tbody>
+      <tbody id="legal-data"></tbody>
     </table>
   </div>
 
 <script>
-const last_updated = '25/04/2025';
-
-const updateKeywords = ["hôm nay", "cập nhật", "dữ liệu mới nhất", "mới nhất", "update"];
-
-function isAskingForUpdate(input) {
-  return updateKeywords.some(function(keyword) {
-    return input.includes(keyword);
-  });
-}
-
-function getRandomPendingMessage() {
-  const messages = [
-    "⚠️ Dữ liệu đang chờ cập nhật...",
-    "⚠️ Chưa có dữ liệu mới hôm nay."
-  ];
-  return messages[Math.floor(Math.random() * messages.length)];
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
 }
 
 function askLegalBot() {
   const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim().toLowerCase();
+  const input = inputEl.value.trim();
   const responseDiv = document.getElementById("legal-chat-response");
   if (!input) return;
 
-  let answer = "";
-
-  if (isAskingForUpdate(input)) {
-    if (typeof last_updated !== "undefined" && last_updated) {
-      answer = "🗓️ Dữ liệu đã cập nhật lần cuối vào ngày: <strong>" + last_updated + "</strong>.";
-    } else {
-      answer = getRandomPendingMessage();
-    }
-  } else {
-    answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
-  }
+  const answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
 
   const entry = document.createElement("div");
   entry.className = "chat-entry";
-  entry.innerHTML = "<div class='chat-question'>❓ " + inputEl.value + "</div><div class='chat-answer'>" + answer + "</div>";
+  entry.innerHTML = `<div class="chat-question">❓ ${input}</div><div class="chat-answer">${answer}</div>`;
   responseDiv.prepend(entry);
   inputEl.value = "";
+  responseDiv.scrollTop = 0;
 }
 
-function showTab(id) {
-  document.querySelectorAll('.tab').forEach(function(tab) {
-    tab.classList.remove('active');
+function loadLegalData() {
+  const projectsLegal = [
+    {
+      name: "Khánh Hòa - AMI",
+      cod: "26/06/2019",
+      acceptance: "11/09/2019",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Cung cấp biên bản nộp hồ sơ từ tháng 7/2019 để chứng minh thiện chí tuân thủ trước Thông tư 10/2023."
+    },
+    {
+      name: "BT1 - AMI",
+      cod: "16/10/2021",
+      acceptance: "26/10/2021",
+      fit: "FIT 1",
+      risk: "trungbinh",
+      recommendation: "Cân nhắc dời ngày COD về sau nghiệm thu để hợp thức FIT 1 và giảm nguy cơ hồi tố."
+    },
+    {
+      name: "BMT - AMI",
+      cod: "Đang xác minh",
+      acceptance: "Sau COD",
+      fit: "FIT 1",
+      risk: "cao",
+      recommendation: "Bổ sung giấy phép hoạt động thủy lộ và lập luận về bản chất pháp lý quyền sử dụng đất."
+    }
+  ];
+
+  const tbody = document.getElementById("legal-data");
+  tbody.innerHTML = "";
+  projectsLegal.forEach(p => {
+    const row = document.createElement("tr");
+    row.className = `risk-${p.risk}`;
+    row.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.cod}</td>
+      <td>${p.acceptance}</td>
+      <td>${p.fit}</td>
+      <td>${p.risk.toUpperCase()}</td>
+      <td>${p.recommendation}</td>
+    `;
+    tbody.appendChild(row);
   });
-  document.getElementById('tab-' + id).classList.add('active');
 }
 </script>
 </body>
