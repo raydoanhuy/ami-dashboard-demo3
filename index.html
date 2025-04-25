@@ -128,56 +128,14 @@
     <h2>AI Pháp Lý</h2>
     <p>Trò chuyện với chatbot pháp lý AMI</p>
     <div class="chatbox">
-  <div>
-    <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..."
-      onkeydown="if(event.key==='Enter') askLegalBot();">
-    <button onclick="askLegalBot()">↑</button>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input id="legal-chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." onkeydown="if(event.key==='Enter'){ askLegalBot(); }">
+        <button onclick="askLegalBot()">↑</button>
+      </div>
+      <div id="legal-chat-response" class="chat-history"></div>
+    </div>
   </div>
-  <div id="legal-chat-response" class="chat-history"></div>
-</div>
-
-<script>
-const last_updated = "26/04/2025";  // Đặt ngày cập nhật gần nhất tại đây
-
-const updateKeywords = ["hôm nay", "cập nhật", "dữ liệu mới nhất", "mới nhất", "update"];
-
-function isAskingForUpdate(input) {
-  return updateKeywords.some(keyword => input.includes(keyword));
-}
-
-function getRandomPendingMessage() {
-  const messages = [
-    "⚠️ Dữ liệu đang chờ cập nhật...",
-    "⚠️ Chưa có dữ liệu mới hôm nay."
-  ];
-  return messages[Math.floor(Math.random() * messages.length)];
-}
-
-function askLegalBot() {
-  const inputEl = document.getElementById("legal-chat-input");
-  const input = inputEl.value.trim().toLowerCase();
-  const responseDiv = document.getElementById("legal-chat-response");
-  if (!input) return;
-
-  let answer = "";
-
-  if (isAskingForUpdate(input)) {
-    if (typeof last_updated !== "undefined" && last_updated) {
-      answer = `🗓️ Dữ liệu đã cập nhật lần cuối vào ngày: <strong>${last_updated}</strong>.`;
-    } else {
-      answer = getRandomPendingMessage();
-    }
-  } else {
-    answer = "❗ Câu hỏi này cần tư vấn từ chuyên gia,<br>vui lòng đặt lịch tư vấn (500.000đ/30 phút)";
-  }
-
-  const entry = document.createElement("div");
-  entry.className = "chat-entry";
-  entry.innerHTML = `<div class="chat-question">❓ ${inputEl.value}</div><div class="chat-answer">${answer}</div>`;
-  responseDiv.prepend(entry);
-  inputEl.value = "";
-}
-</script>
+<div id="tab-investment" class="tab">
     <h2>AI Quản Lý Đầu Tư</h2>
     <p>Theo dõi dòng tiền giữa các pháp nhân và báo cáo AI cho từng dự án.</p>
     <table>
