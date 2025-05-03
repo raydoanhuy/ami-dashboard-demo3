@@ -2,32 +2,32 @@ name: Update ChatBot FAQ Data
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Chạy mỗi ngày lúc 0h UTC (7h sáng Việt Nam)
+    - cron: "0 3 * * *" # Hàng ngày lúc 10h sáng VN
   workflow_dispatch:
 
 jobs:
   update-faq:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Pull latest data from Google Drive (Giả lập bước này)
+      - name: Set up Git
         run: |
-          echo "// TODO: Chỗ này mình sẽ thêm script tự động đọc Drive nếu cần" > faqData.js
-          echo "export const faqData = { 'thuế': { 'thuế thu nhập cá nhân là gì': { answer: 'Thuế TNCN là khoản tiền cá nhân phải nộp.', keywords: ['thuế', 'thu nhập', 'cá nhân'] }}};" >> faqData.js
+          git config --global user.name 'raydoanhuy'
+          git config --global user.email 'raydoanhuy@gmail.com'
 
-      - name: Commit and push updated faqData.js
+      - name: Update FAQ data
         run: |
-          git config --global user.name 'ami-chatbot-bot'
-          git config --global user.email 'ami.chatbot@bot.com'
-          git add faqData.js
-          git commit -m "Update faqData.js automatically [skip ci]" || echo "Nothing to commit"
-          git push https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:main
+          echo "Cập nhật dữ liệu FAQ tự động"
+          # Ví dụ cập nhật file từ Google Drive
+          cp ./data/faq-latest.json ./public/faq.json
 
-    # Notifications mặc định: GitHub sẽ gửi email khi workflow fail nếu user bật Notifications trong GitHub settings.
+      - name: Commit and Push
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git add .
+          git commit -m "Auto-update ChatBot FAQ Data"
+          git push https://raydoanhuy:${GH_PAT}@github.com/raydoanhuy/ami-dashboard-demo3.git main
