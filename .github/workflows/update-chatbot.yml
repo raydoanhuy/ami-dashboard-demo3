@@ -13,16 +13,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Git
-        run: |
-          git config --global user.name 'raydoanhuy'
-          git config --global user.email 'raydoanhuy@gmail.com'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Hoặc phiên bản phù hợp
+
+      - name: Create data directory
+        run: mkdir -p ./data
+
+      - name: Run data.js to generate faq-latest.json
+        run: node data.js
+
+      - name: Debug directory structure
+        run: ls -R # Kiểm tra xem faq-latest.json có được tạo không
 
       - name: Update FAQ data
         run: |
           echo "Cập nhật dữ liệu FAQ tự động"
-          # Ví dụ cập nhật file từ Google Drive
-          cp ./data/faq-latest.json ./public/faq.json
+          if [ -f ./data/faq-latest.json ]; then
+            cp ./data/faq-latest.json ./public/faq.json
+          else
+            echo "Lỗi: File faq-latest.json không tồn tại."
+            exit 1
+          fi
 
       - name: Commit and Push
         env:
